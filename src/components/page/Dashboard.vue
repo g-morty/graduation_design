@@ -22,19 +22,30 @@
       </el-col>
     </el-row>
 
-    <el-drawer :title="classDetail.title" v-loading="true" :visible.sync="isShowClassDetail" direction="btt" :before-close="hideClassDetail">
+    <el-drawer size="50%" :title="classDetail.title" v-loading="true" :visible.sync="isShowClassDetail" direction="btt" :before-close="hideClassDetail">
       <div class="class-box">
         <el-table v-loading="isShowClassFile" :data="classFile">
-          <el-table-column label="视频" width="180">
-            <el-button type="primary">下载</el-button>
+          <el-table-column label="视频" width="180" v-if="classDetail.audio">
+            <el-button type="primary" @click="audioDown">下载</el-button>
           </el-table-column>
-          <el-table-column label="课件" width="180">
-            <el-button type="primary">下载</el-button>
-
+          <el-table-column label="课件" width="180" v-if="classDetail.ppt">
+            <el-button type="primary" @click="pptDown">下载</el-button>
           </el-table-column>
-          <el-table-column label="卷子">
-            <el-button type="primary">下载</el-button>
+          <el-table-column label="卷子" v-if="classDetail.paper">
+            <el-button type="primary" @click="paperDown">下载</el-button>
           </el-table-column>
+        </el-table>
+      </div>
+      <div class="btn-group">
+        <el-button class="pinglun" type="primary" @click="open">评论</el-button>
+      </div>
+      <div class="class-box class-box-comment">
+        <!-- commentList: [],
+            isGetCommentList: false -->
+        <el-table :data="commentList" style="width: 100%" v-loading="isGetCommentList">
+          <el-table-column prop="userName" label="姓名" width="180"> </el-table-column>
+          <el-table-column prop="time" label="评价时间" width="180"> </el-table-column>
+          <el-table-column prop="messageContent" label="评价内容"> </el-table-column>
         </el-table>
       </div>
     </el-drawer>
@@ -273,7 +284,10 @@ export default {
                 //     address: '上海市普陀区金沙江路 1518 弄'
                 // }
             ],
-            isShowClassFile: true
+            isShowClassFile: true,
+            isDown: false,
+            commentList: [],
+            isGetCommentList: false
         };
     },
     mounted() {
@@ -329,16 +343,12 @@ export default {
             });
             console.log(this.classDetail);
             this.getClassFile();
+            this.getComment();
         },
         hideClassDetail() {
             this.isShowClassDetail = false;
         },
         async getClassFile() {
-            // {
-            //     audio: '',
-            //     ppt: '',
-            //     pager: ''
-            // }
             this.isShowClassFile = true;
             const audio = this.classDetail.audio;
             let ppt = '';
@@ -348,7 +358,6 @@ export default {
                 cId: this.classDetail.id
             });
             if (pptRes.status == 200 && pptRes.data.code == 200 && pptRes.data.data.length > 0) {
-                console.log('abc');
                 ppt = pptRes.data.data[0].resourceLocation;
             }
 
@@ -367,16 +376,101 @@ export default {
                     paper
                 }
             ];
+            this.classDetail.ppt = ppt;
+            this.classDetail.paper = paper;
             this.isShowClassFile = false;
         },
         async downFile(filePath) {
-            console.log(filePath);
             const format = new FormData();
             format.append('path', filePath);
             const res = await Axios.get('/api/bigData/cource/videoPull', format, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
+        },
+        async audioDown() {
+            const audioUrl = this.classDetail.audio;
+            if (audioUrl === '') return;
+            const a = document.createElement('a');
+            a.href = `https://morty.xiaomy.net/api/bigData/cource/videoPull?path=${audioUrl}`;
+            a.click();
+        },
+        async pptDown() {
+            const pptUrl = this.classDetail.ppt;
+            if (pptUrl === '') return;
+            const a = document.createElement('a');
+            a.href = `https://morty.xiaomy.net/api/bigData/cource/videoPull?path=${pptUrl}`;
+            a.click();
+        },
+        async paperDown() {
+            const paperUrl = this.classDetail.paper;
+            if (paperUrl === '') return;
+            const a = document.createElement('a');
+            a.href = `https://morty.xiaomy.net/api/bigData/exam/examPull?id=${paperUrl}`;
+            a.click();
+        },
+        async getComment() {
+            const cId = this.classDetail.id;
+            this.isGetCommentList = true;
+            const res = await Axios.post('/api/bigData/message/selectMyMessage', {
+                cId
+            });
+            this.isGetCommentList = false;
             console.log(res);
+            if (res.status === 200 && res.data.code === 200) {
+                this.commentList = this.getNewArr(res.data.data);
+            }
+        },
+        getNewArr(oldArr) {
+            const newArr = [];
+            oldArr.map((v) => {
+                console.log(v);
+                newArr.push(...v);
+            });
+            return newArr;
+        },
+        open() {
+            this.$prompt('请输入评论', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPattern: /\S/,
+                inputErrorMessage: '评论不能为空'
+            })
+                .then(({ value }) => {
+                    this.uploadComment(value);
+                })
+                .catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
+        },
+        async uploadComment(com) {
+            console.log(com);
+            const commentData = this.getCommentData(com);
+            const res = await Axios.post('/api/bigData/message/insert', commentData);
+            if (res.status == 200 && res.data.code == 200) {
+                this.getComment();
+            }
+        },
+        getCommentData(com) {
+            const messageContent = com;
+            const uId = Number(localStorage.getItem('user_id'));
+            const date = new Date();
+            const time = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
+                .getDay()
+                .toString()
+                .padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date
+                .getSeconds()
+                .toString()
+                .padStart(2, '0')}`;
+            const cId = this.classDetail.id;
+            return {
+                messageContent,
+                uId,
+                time,
+                cId
+            };
         }
 
         // handleListener() {
@@ -517,5 +611,17 @@ export default {
     align-items: center;
     padding-left: 40px;
     padding-right: 40px;
+}
+.btn-group {
+    padding: 0 40px;
+}
+.pinglun {
+    display: block;
+    width: 100%;
+    margin-top: 40px;
+}
+.class-box-comment {
+    margin-top: 20px;
+    margin-bottom: 80px;
 }
 </style>

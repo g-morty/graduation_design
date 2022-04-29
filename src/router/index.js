@@ -72,8 +72,8 @@ export default new Router({
         {
           // 拖拽列表组件
           path: '/dragsub',
-          component: () => import(/* webpackChunkName: "drag" */ '../components/page/DragList.vue'),
-          meta: { title: '拖拽列表' }
+          component: () => import(/* webpackChunkName: "drag" */ '../components/page/DragListSub.vue'),
+          meta: { title: '题库' }
         },
         {
           // 拖拽Dialog组件

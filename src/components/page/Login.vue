@@ -58,6 +58,7 @@ export default {
                     this.$message.success('登录成功');
                     localStorage.setItem('ms_username', this.param.username);
                     localStorage.setItem('ms_type', res.data.user.role);
+                    localStorage.setItem('user_id', res.data.user.id);
                     this.$router.push('/');
                 } else {
                     this.$message.error(res.data.msg);
@@ -81,28 +82,30 @@ export default {
             console.log(res.data);
             if (res.status === 200) {
                 if (res.data.code === 200) {
-                    this.$message.success('注册成功');
-                    localStorage.setItem('ms_username', this.param.username);
-                    localStorage.setItem('ms_type', 'student');
-                    this.$router.push('/');
+                    this.login()
+                    // this.$message.success('注册成功');
+                    // localStorage.setItem('ms_username', this.param.username);
+                    // localStorage.setItem('ms_type', 'student');
+                    // localStorage.setItem('user_id', res.data.data);
+                    // this.$router.push('/');
                 } else {
                     this.$message.error(res.data.msg);
                 }
             }
         },
-        submitForm() {
-            this.$refs.login.validate((valid) => {
-                if (valid) {
-                    this.$message.success('登录成功');
-                    localStorage.setItem('ms_username', this.param.username);
-                    this.$router.push('/');
-                } else {
-                    this.$message.error('请输入账号和密码');
-                    console.log('error submit!!');
-                    return false;
-                }
-            });
-        }
+        // submitForm() {
+        //     this.$refs.login.validate((valid) => {
+        //         if (valid) {
+        //             this.$message.success('登录成功');
+        //             localStorage.setItem('ms_username', this.param.username);
+        //             this.$router.push('/');
+        //         } else {
+        //             this.$message.error('请输入账号和密码');
+        //             console.log('error submit!!');
+        //             return false;
+        //         }
+        //     });
+        // }
     }
 };
 </script>
