@@ -42,73 +42,78 @@ export default {
                 },
                 {
                     icon: 'el-icon-lx-cascades',
-                    index: 'table',
-                    title: '基础表格'
+                    index: 'studentUp',
+                    title: '交卷'
                 },
-                {
-                    icon: 'el-icon-lx-copy',
-                    index: 'tabs',
-                    title: 'tab选项卡'
-                },
-                {
-                    icon: 'el-icon-lx-calendar',
-                    index: '3',
-                    title: '表单相关',
-                    subs: [
-                        {
-                            index: 'form',
-                            title: '基本表单'
-                        },
-                        {
-                            index: '3-2',
-                            title: '三级菜单',
-                            subs: [
-                                {
-                                    index: 'editor',
-                                    title: '富文本编辑器'
-                                },
-                                {
-                                    index: 'markdown',
-                                    title: 'markdown编辑器'
-                                }
-                            ]
-                        },
-                        {
-                            index: 'upload',
-                            title: '文件上传'
-                        }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-emoji',
-                    index: 'icon',
-                    title: '自定义图标'
-                },
+                // {
+                //     icon: 'el-icon-lx-cascades',
+                //     index: 'table',
+                //     title: '成绩图表'
+                // },
+                // {
+                //     icon: 'el-icon-lx-copy',
+                //     index: 'tabs',
+                //     title: 'tab选项卡'
+                // },
+                // {
+                //     icon: 'el-icon-lx-calendar',
+                //     index: 'form',
+                //     title: '成绩图表',
+                //     // subs: [
+                //     //     {
+                //     //         index: 'form',
+                //     //         title: '基本表单'
+                //     //     },
+                //     //     {
+                //     //         index: '3-2',
+                //     //         title: '三级菜单',
+                //     //         subs: [
+                //     //             {
+                //     //                 index: 'editor',
+                //     //                 title: '富文本编辑器'
+                //     //             },
+                //     //             {
+                //     //                 index: 'markdown',
+                //     //                 title: 'markdown编辑器'
+                //     //             }
+                //     //         ]
+                //     //     },
+                //     //     {
+                //     //         index: 'upload',
+                //     //         title: '文件上传'
+                //     //     }
+                //     // ]
+                // },
+                // {
+                //     icon: 'el-icon-lx-emoji',
+                //     index: 'icon',
+                //     title: '自定义图标'
+                // },
                 {
                     icon: 'el-icon-pie-chart',
                     index: 'charts',
-                    title: 'schart图表'
+                    title: '成绩图表'
                 },
-                {
-                    icon: 'el-icon-rank',
-                    index: '6',
-                    title: '拖拽组件',
-                    subs: [
-                        {
-                            index: 'drag',
-                            title: '拖拽列表'
-                        },
-                        {
-                            index: 'dialog',
-                            title: '拖拽弹框'
-                        }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-global',
-                    index: 'i18n',
-                    title: '国际化功能'
-                }
+                // {
+                //     icon: 'el-icon-rank',
+                //     index: '6',
+                //     title: '拖拽组件',
+                //     subs: [
+                //         {
+                //             index: 'drag',
+                //             title: '拖拽列表'
+                //         },
+                //         {
+                //             index: 'dialog',
+                //             title: '拖拽弹框'
+                //         }
+                //     ]
+                // },
+                // {
+                //     icon: 'el-icon-lx-global',
+                //     index: 'i18n',
+                //     title: '国际化功能'
+                // }
             ]
         };
     },
@@ -123,7 +128,7 @@ export default {
             this.collapse = msg;
             bus.$emit('collapse-content', msg);
         });
-        console.log(localStorage.getItem('ms_type'));
+        // console.log(localStorage.getItem('ms_type'));
         this.items.push({
             icon: 'el-icon-lx-warn',
             index: '7',
@@ -132,6 +137,18 @@ export default {
                 {
                     index: localStorage.getItem('ms_type') === 'teacher' ? 'dragsub' : 'permission',
                     title: '题库'
+                },
+                {
+                    index: 'classManage',
+                    title: '课程管理'
+                },
+                // {
+                //     index: localStorage.getItem('ms_type') === 'teacher' ? 'dragsub' : 'permission',
+                //     title: '题库'
+                // },
+                {
+                    index: 'paperManage',
+                    title: '卷子管理'
                 }
             ]
         });

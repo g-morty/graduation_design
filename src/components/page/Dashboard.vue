@@ -46,9 +46,15 @@
           <el-table-column prop="userName" label="姓名" width="180"> </el-table-column>
           <el-table-column prop="time" label="评价时间" width="180"> </el-table-column>
           <el-table-column prop="messageContent" label="评价内容"> </el-table-column>
+          <el-table-column label="操作" width="120" fixed="right" v-if="isTeacher">
+            <template slot-scope="scope">
+              <el-button type="primary" @click="deleteComment(scope.row)" :loading="isDeleteComment">删除</el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </div>
     </el-drawer>
+  
     <!-- <el-row :gutter="20">
             <el-col :span="8">
                 <el-card shadow="hover" class="mgb20" style="height:252px;">
@@ -114,33 +120,7 @@
                         </el-card>
                     </el-col>
                 </el-row>
-                <el-card shadow="hover" style="height:403px;">
-                    <div slot="header" class="clearfix">
-                        <span>待办事项</span>
-                        <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
-                    </div>
-                    <el-table :show-header="false" :data="todoList" style="width:100%;">
-                        <el-table-column width="40">
-                            <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.status"></el-checkbox>
-                            </template>
-                        </el-table-column>
-                        <el-table-column>
-                            <template slot-scope="scope">
-                                <div
-                                    class="todo-item"
-                                    :class="{'todo-item-del': scope.row.status}"
-                                >{{scope.row.title}}</div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column width="60">
-                            <template>
-                                <i class="el-icon-edit"></i>
-                                <i class="el-icon-delete"></i>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-card>
+                
             </el-col>
         </el-row> -->
     <!-- <el-row :gutter="20">
@@ -287,11 +267,14 @@ export default {
             isShowClassFile: true,
             isDown: false,
             commentList: [],
-            isGetCommentList: false
+            isGetCommentList: false,
+            isTeacher: false,
+            isDeleteComment: false
         };
     },
     mounted() {
         this.getKnowledgeList();
+        this.judgeIsTeacher();
     },
     components: {
         Schart
@@ -313,6 +296,11 @@ export default {
     //     bus.$off('collapse', this.handleBus);
     // },
     methods: {
+        judgeIsTeacher() {
+            const ms_type = localStorage.getItem('ms_type');
+            console.log(ms_type);
+            this.isTeacher = ms_type === 'teacher';
+        },
         async getKnowledgeList() {
             const res = await Axios.post('/api/bigData/cource/selectAll');
             if (res.data.code == 200) {
@@ -415,9 +403,10 @@ export default {
                 cId
             });
             this.isGetCommentList = false;
-            console.log(res);
+            // console.log(res);
             if (res.status === 200 && res.data.code === 200) {
                 this.commentList = this.getNewArr(res.data.data);
+                console.log(this.commentList);
             }
         },
         getNewArr(oldArr) {
@@ -471,6 +460,16 @@ export default {
                 time,
                 cId
             };
+        },
+        async deleteComment(commentInfo) {
+            this.isDeleteComment = true;
+            const res = await Axios.post('/api/bigData/message/delete', {
+                id: commentInfo.id
+            });
+            this.isDeleteComment = false;
+            if (res.status == 200 && res.data.code == 200) {
+                this.getComment();
+            }
         }
 
         // handleListener() {

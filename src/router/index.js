@@ -76,6 +76,13 @@ export default new Router({
           meta: { title: '题库' }
         },
         {
+          // 拖拽列表组件
+          path: '/classManage',
+          component: () => import(/* webpackChunkName: "drag" */ '../components/page/ClassManage.vue'),
+          meta: { title: '题库管理' }
+        },
+        
+        {
           // 拖拽Dialog组件
           path: '/dialog',
           component: () => import(/* webpackChunkName: "dragdialog" */ '../components/page/DragDialog.vue'),
@@ -102,7 +109,18 @@ export default new Router({
           path: '/403',
           component: () => import(/* webpackChunkName: "403" */ '../components/page/403.vue'),
           meta: { title: '403' }
-        }
+        },
+        // paperManage
+        {
+          path: '/paperManage',
+          component: () => import(/* webpackChunkName: "paperManage" */ '../components/page/paperManage.vue'),
+          meta: { title: '卷子管理' }
+        },
+        {
+          path: '/studentUp',
+          component: () => import(/* webpackChunkName: "studentUp" */ '../components/page/StudentUp.vue'),
+          meta: { title: '交卷' }
+        },
       ]
     },
     {
